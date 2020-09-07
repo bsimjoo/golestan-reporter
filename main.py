@@ -15,7 +15,7 @@ from mailconfig import *
 # password = r'yourpassword'
 
 def get_news():
-    req=requests.get(url)
+    req=requests.get(golestan_news_source)
     soup=BeautifulSoup(req.content,'html.parser')
     news=soup.find('div',class_='newsitm')
     newsDict={}
