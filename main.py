@@ -53,6 +53,7 @@ def checkAndMail(timer=0):
         newsString='\n'.join(n.values())
         result = hashlib.md5(newsString.encode("utf-8")).hexdigest()
         if result!=newsHash:
+            print('new notification. preparing to send mails')
             newsHash=result
             #save latest news hash in local file
             with open(last_news_hash_file,'w') as lnfile:
@@ -93,13 +94,18 @@ def checkAndMail(timer=0):
 def keyboardInterruptHandler(signal, frame):
     print("KeyboardInterrupt (ID: {}) has been caught. Cleaning up...".format(signal))
     print('closing')
-    checkThread.cancel()
-    checkThread.join()
-    exit(0)
+    try:
+        checkThread.cancel()
+        checkThread.join()
+    except:
+        pass
+    finally:
+        exit(0)
 
 if __name__=="__main__":
     signal.signal(signal.SIGINT, keyboardInterruptHandler)
-    # checking and mailing every 5 minutes
     print('press ctrl+c to exit')
+    # checking and mailing every 5 minutes
     checkAndMail(5*60)
+
     
