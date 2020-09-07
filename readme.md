@@ -1,5 +1,5 @@
 # Golestan reporter
-This project is a simple python3 script who helps Iranian university students and sends the latest news of their university Golestan system news via email
+This project is a simple python3 script that helps Iranian university students and sends the latest news of their university Golestan system news via email
 
 ## Installation
 first install requirements. you can install them by:
