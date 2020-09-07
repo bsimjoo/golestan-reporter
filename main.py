@@ -20,8 +20,8 @@ def get_news():
     news=soup.find('div',class_='newsitm')
     newsDict={}
     news_title=news('span','newsitmtitle')[1].b.get_text()
-    newsDict['title']=news_title
-    news_dateText=news.find('span','newsitmpubdate').get_text()
+    newsDict['title']=str(news_title)
+    news_dateText=str(news.find('span','newsitmpubdate').get_text())
     pat=r'\d+/\d+/\d+'
     date=re.findall(pat,news_dateText)[0]
     newsDict['date']=date
@@ -29,7 +29,7 @@ def get_news():
     #date_code=date[0]*356+date[1]*31+date[2]
     #newsDict['date code']=date_code
     news_body=news.find('div','newsitmbody').div.p
-    newsDict['body']=news_body
+    newsDict['body']=str(news_body)
     return newsDict
 
 checkThread=None
@@ -100,6 +100,6 @@ def keyboardInterruptHandler(signal, frame):
 if __name__=="__main__":
     signal.signal(signal.SIGINT, keyboardInterruptHandler)
     # checking and mailing every 5 minutes
-    checkAndMail(5*60)
     print('press ctrl+c to exit')
+    checkAndMail(5*60)
     
