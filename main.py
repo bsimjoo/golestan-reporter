@@ -94,10 +94,10 @@ mainThread=threading.currentThread()
 def keyboardInterruptHandler(signal, frame):
     print(f"KeyboardInterrupt (ID: {signal}) has been caught. Cleaning up...")
     try:
+        global mainLoop
         mainLoop=False
         checkThread.cancel()
         checkThread.join()
-        mainThread.join()
         print('bye bye!')
         exit(0)
     except:
