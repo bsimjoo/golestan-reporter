@@ -116,4 +116,4 @@ if __name__ == "__main__":
             pass
         with locker:
             with open(mail_list_file,'a') as mailList:
-                mailList.write(mail)
+                mailList.write(os.linesep+mail)
