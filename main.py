@@ -25,9 +25,6 @@ def get_news():
     pat = r'\d+/\d+/\d+'
     date = re.findall(pat,news_dateText)[0]
     newsDict['date'] = date
-    #date=date.split('/')
-    #date_code=date[0]*356+date[1]*31+date[2]
-    #newsDict['date code']=date_code
     news_body = news.find('div','newsitmbody').div.p
     newsDict['body'] = str(news_body)
     return newsDict
@@ -41,6 +38,7 @@ if os.path.isfile(last_news_hash_file):
         except Exception as e:
             print('unable to read latest news file', type(e), e, sep = '\n')
 
+locker=threading.RLock()
 def checkAndMail(timer = 0):
     n = None
     try:
@@ -74,11 +72,12 @@ def checkAndMail(timer = 0):
                 msg['From'] = from_
                 msg['Subject']=n['title']
                 msg.attach(MIMEText(n['body'],'html'))
-                with open(mail_list_file) as mailList:
-                    for mailAdd in mailList:
-                        print('sending mail to:', mailAdd)
-                        msg['To'] = mailAdd
-                        server.sendmail(sender_email, mailAdd, msg.as_string())
+                with locker:
+                    with open(mail_list_file) as mailList:
+                        for mailAdd in mailList:
+                            print('sending mail to:', mailAdd)
+                            msg['To'] = mailAdd
+                            server.sendmail(sender_email, mailAdd, msg.as_string())
             except Exception as e:
                 # Print any error messages to stdout
                 print(e)
@@ -90,19 +89,31 @@ def checkAndMail(timer = 0):
         checkThread = threading.Timer(timer, checkAndMail, [timer])
         checkThread.start()
 
+mainLoop=True
+mainThread=threading.currentThread()
 def keyboardInterruptHandler(signal, frame):
     print(f"KeyboardInterrupt (ID: {signal}) has been caught. Cleaning up...")
-    print("closing")
     try:
+        mainLoop=False
         checkThread.cancel()
         checkThread.join()
+        mainThread.join()
+        print('bye bye!')
+        exit(0)
     except:
         pass
-    finally:
-        exit(0)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, keyboardInterruptHandler)
     print('press ctrl+c to exit')
     # checking and mailing every 5 minutes
     checkAndMail(5*60)
+    while mainLoop:
+        try:
+            mail=input('Enter mail address to add: ')
+        except EOFError:
+            # when ctrl+c pressed
+            pass
+        with locker:
+            with open(mail_list_file,'a') as mailList:
+                mailList.write('\n'+mail)
