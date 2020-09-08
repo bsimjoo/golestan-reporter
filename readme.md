@@ -1,4 +1,5 @@
 # Golestan reporter
+###### license: [GPL3.0](license.md)
 This project is a simple python3 script that helps Iranian university students and sends the latest news of their university Golestan system news via email
 
 ## Installation
