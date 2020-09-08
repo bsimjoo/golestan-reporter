@@ -98,7 +98,7 @@ def keyboardInterruptHandler(signal, frame):
         mainLoop=False
         checkThread.cancel()
         checkThread.join()
-        print('bye bye!')
+        print('closed check and mail thread but ">exit" may be needed to exit')
         exit(0)
     except:
         pass
@@ -121,8 +121,6 @@ if __name__ == "__main__":
         elif mail.startswith('>'):
             if mail=='>exit':
                 try:
-                    global mainLoop
-                    mainLoop=False
                     checkThread.cancel()
                     checkThread.join()
                     print('bye bye!')
