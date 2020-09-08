@@ -105,7 +105,7 @@ def keyboardInterruptHandler(signal, frame):
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, keyboardInterruptHandler)
-    print('press ctrl+c to exit')
+    print('press write ">exit" to close')
     # checking and mailing every 5 minutes
     checkAndMail(5*60)
     while mainLoop:
@@ -114,6 +114,18 @@ if __name__ == "__main__":
         except EOFError:
             # when ctrl+c pressed
             pass
-        with locker:
-            with open(mail_list_file,'a') as mailList:
-                mailList.write(os.linesep+mail)
+        if mainLoop or not mail.startswith('>'):
+            with locker:
+                with open(mail_list_file,'a') as mailList:
+                    mailList.write(os.linesep+mail)
+        elif mail.startswith('>'):
+            if mail=='>exit':
+                try:
+                    global mainLoop
+                    mainLoop=False
+                    checkThread.cancel()
+                    checkThread.join()
+                    print('bye bye!')
+                    break
+                except:
+                    pass
