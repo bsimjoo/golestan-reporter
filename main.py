@@ -75,9 +75,11 @@ def checkAndMail(timer = 0):
                 with locker:
                     with open(mail_list_file) as mailList:
                         for mailAdd in mailList:
-                            print('sending mail to:', mailAdd)
-                            msg['To'] = mailAdd
-                            server.sendmail(sender_email, mailAdd, msg.as_string())
+                            mailAdd=mailAdd.strip()
+                            if mailAdd !='':
+                                print('sending mail to:', mailAdd)
+                                msg['To'] = mailAdd
+                                server.sendmail(sender_email, mailAdd, msg.as_string())
             except Exception as e:
                 # Print any error messages to stdout
                 print(e)
