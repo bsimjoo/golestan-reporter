@@ -1,0 +1,25 @@
+/*This style sheet created to fix java script disbled issus*/
+.loading-screen{
+    display:none !important;
+}
+.header-container {
+    background-color:white !important;
+    height: 20px !important;
+    color: black !important;
+}
+.header-container *{
+    color:black !important;
+}
+#script-message{
+    background-color: white;
+    color:darkred;
+    position: fixed;
+    display: initial !important;
+    width: 100%;
+    top:50px;
+    padding: 5px;;
+}
+#end{
+    color:white !important;
+    margin-left: 0px !important;
+}

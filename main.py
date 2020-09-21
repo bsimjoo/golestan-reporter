@@ -38,7 +38,7 @@ if os.path.isfile(last_news_hash_file):
         except Exception as e:
             print('unable to read latest news file', type(e), e, sep = '\n')
 
-locker=threading.RLock()
+locker=threading.Lock()
 def checkAndMail(timer = 0):
     n = None
     try:
