@@ -57,13 +57,29 @@ body {
 #msform textarea {
     padding: 15px;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    border-radius: 7px;
     margin-bottom: 10px;
     width: 100%;
     box-sizing: border-box;
     font-family: montserrat;
     color: #2C3E50;
     font-size: 13px;
+}
+
+
+/* Chrome, Safari, Edge, Opera */
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* Firefox */
+
+input[type=number] {
+    -moz-appearance: textfield;
 }
 
 
@@ -81,8 +97,12 @@ body {
     margin: 10px 5px;
 }
 
-#msform .action-button:hover,
-#msform .action-button:focus {
+#msform .action-button:disabled {
+    background-color: #ccc;
+}
+
+#msform .action-button:active:hover,
+#msform .action-button:active:focus {
     box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
 }
 
@@ -117,7 +137,7 @@ body {
     list-style-type: none;
     color: white;
     text-transform: uppercase;
-    font-size: 9px;
+    font-size: 15px;
     width: 33.33%;
     float: right;
     position: relative;
@@ -126,10 +146,10 @@ body {
 #progressbar li:before {
     content: counter(step, decimal);
     counter-increment: step;
-    width: 20px;
-    line-height: 20px;
+    width: 40px;
+    line-height: 40px;
     display: block;
-    font-size: 10px;
+    font-size: 15px;
     color: #333;
     background: white;
     border-radius: 3px;
@@ -142,11 +162,11 @@ body {
 #progressbar li:after {
     content: '';
     width: 100%;
-    height: 2px;
+    height: 6px;
     background: white;
     position: absolute;
     right: -50%;
-    top: 9px;
+    top: 17px;
     z-index: -1;
     /*put it behind the numbers*/
 }
@@ -162,8 +182,43 @@ body {
 
 /*The number of the step and the connector before it = green*/
 
-#progressbar li.active:before,
-#progressbar li.active:after {
+#progressbar li.active:before {
     background: #27AE60;
     color: white;
+}
+
+#progressbar li.active:after {
+    color: white;
+    background: linear-gradient(270deg, #27AE60, #ffffff);
+    background-size: 400% 400%;
+    -webkit-animation: fill-proccess 1s forwards;
+    -moz-animation: fill-proccess 1s forwards;
+    animation: fill-proccess 1s forwards;
+}
+
+@-webkit-keyframes fill-proccess {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+@-moz-keyframes fill-proccess {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes fill-proccess {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }

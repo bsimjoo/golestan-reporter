@@ -1,17 +1,19 @@
 //jQuery time
-var current_fs, next_fs, previous_fs; //fieldsets
+var current_fs, next_fs, previous_fs, step_ = 0; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
+$("#verify").attr("disabled", true)
 
-$(".next").click(function() {
+function next() {
     if (animating) return false;
     animating = true;
 
-    current_fs = $(this).parent();
-    next_fs = $(this).parent().next();
+    current_fs = $("fieldset").eq(step_);
+    step_ += 1;
+    next_fs = $("fieldset").eq(step_);
 
     //activate next step on progressbar using the index of next_fs
-    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+    $("#progressbar li").eq(step_).addClass("active");
 
     //show the next fieldset
     next_fs.show();
@@ -39,17 +41,20 @@ $(".next").click(function() {
         //this comes from the custom easing plugin
         easing: 'easeInOutBack'
     });
-});
+}
 
-$(".previous").click(function() {
+function previous() {
     if (animating) return false;
     animating = true;
 
-    current_fs = $(this).parent();
-    previous_fs = $(this).parent().prev();
+    current_fs = $("fieldset").eq(step_);
+    previous_fs = $("fieldset").eq(step_ === 2 ? 0 : step_ -= 1);
 
     //de-activate current step on progressbar
-    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+    if (step_ !== 3)
+        $("#progressbar li").eq(step_).removeClass("active");
+    else
+        $("#")
 
     //show the previous fieldset
     previous_fs.show();
@@ -74,8 +79,12 @@ $(".previous").click(function() {
         //this comes from the custom easing plugin
         easing: 'easeInOutBack'
     });
-});
+}
+
+$(".next").click(next);
+
+$(".previous").click(previous);
 
 $(".submit").click(function() {
     return false;
-})
+});

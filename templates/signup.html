@@ -19,34 +19,29 @@
         </ul>
         <!-- fieldsets -->
         <fieldset>
-            <h2 class="fs-title">ساخت یک حساب جدید</h2>
-            <h3 class="fs-subtitle">قدم اول در ساخت یک حساب</h3>
-            <input type="text" name="email" placeholder="آدرس ایمیل" />
-            <input type="password" name="pass" placeholder="رمز" />
-            <input type="password" name="cpass" placeholder="تکرار رمز" />
+            <h2 class="fs-title">ایجاد یک حساب</h2>
+            <h3 class="fs-subtitle">یک حساب برای همه چیز</h3>
+            <input type="number" name="uni_code" placeholder="شماره دانشجویی" />
+            <input type="email" name="email" placeholder="آدرس ایمیل" />
             <input type="button" name="next" class="next action-button" value="بعدی" />
         </fieldset>
         <fieldset>
-            <h2 class="fs-title">Social Profiles</h2>
-            <h3 class="fs-subtitle">Your presence on the social network</h3>
-            <input type="text" name="twitter" placeholder="Twitter" />
-            <input type="text" name="facebook" placeholder="Facebook" />
-            <input type="text" name="gplus" placeholder="Google Plus" />
-            <input type="button" name="previous" class="previous action-button" value="Previous" />
-            <input type="button" name="next" class="next action-button" value="Next" />
+            <h2 class="fs-title">تایید ایمیل</h2>
+            <h3 class="fs-subtitle">کدی که برایتان ایمل شد را وارد کنید</h3>
+            <input type="text" name="ver_code" placeholder="کد" />
+            <input type="button" name="previous" class="previous action-button" value="قبلی" />
+            <input type="button" id="verify" name="verify" class="next action-button" value="تایید" />
         </fieldset>
         <fieldset>
-            <h2 class="fs-title">Personal Details</h2>
-            <h3 class="fs-subtitle">We will never sell it</h3>
-            <input type="text" name="fname" placeholder="First Name" />
-            <input type="text" name="lname" placeholder="Last Name" />
-            <input type="text" name="phone" placeholder="Phone" />
-            <textarea name="address" placeholder="Address"></textarea>
+            <h2 class="fs-title">پایان ثبت نام</h2>
+            <h3 class="fs-subtitle">حساب خود را ایمن کنید</h3>
+            <input type="password" name="password" placeholder="رمز عبور" />
+            <input type="password" name="password-retype" placeholder="تکرار رمز عبور" />
             <input type="button" name="previous" class="previous action-button" value="Previous" />
-            <input type="submit" name="submit" class="submit action-button" value="Submit" />
+            <input type="submit" name="submit" class="submit action-button" value="ثبت" />
         </fieldset>
     </form>
 </body>
-<script src="files/scripts/signup.js"></script>
+<script src="files/scripts/multi-step-form.js"></script>
 
 </html>
