@@ -13,7 +13,7 @@ html {
     height: 100%;
     /*Image only BG fallback*/
     /*background = gradient + image pattern combo*/
-    background: linear-gradient(rgba(196, 102, 0, 0.6), rgba(155, 89, 182, 0.6));
+    background: linear-gradient(45deg, #a70141, #e08700);
 }
 
 body {
@@ -24,7 +24,7 @@ body {
 /*form styles*/
 
 #msform {
-    width: 400px;
+    width: 50%;
     margin: 50px auto;
     text-align: center;
     position: relative;
@@ -80,6 +80,12 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
     -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+}
+
+input#ver_code {
+    text-align: center;
+    font-size: 60px !important;
 }
 
 
@@ -87,11 +93,11 @@ input[type=number] {
 
 #msform .action-button {
     width: 100px;
-    background: #27AE60;
+    background: #e05200;
     font-weight: bold;
     color: white;
     border: 0 none;
-    border-radius: 1px;
+    border-radius: 2px;
     cursor: pointer;
     padding: 10px 5px;
     margin: 10px 5px;
@@ -103,7 +109,7 @@ input[type=number] {
 
 #msform .action-button:active:hover,
 #msform .action-button:active:focus {
-    box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #e05200;
 }
 
 
@@ -121,6 +127,11 @@ input[type=number] {
     font-size: 13px;
     color: #666;
     margin-bottom: 20px;
+}
+
+h4.fs-subtitle {
+    font-size: 10px;
+    margin-top: -15px;
 }
 
 
@@ -149,10 +160,11 @@ input[type=number] {
     width: 40px;
     line-height: 40px;
     display: block;
-    font-size: 15px;
+    font-size: 20px;
     color: #333;
-    background: white;
-    border-radius: 3px;
+    background: none;
+    border: 6px solid white;
+    border-radius: 50%;
     margin: 0 auto 5px auto;
 }
 
@@ -161,12 +173,12 @@ input[type=number] {
 
 #progressbar li:after {
     content: '';
-    width: 100%;
+    width: 66%;
     height: 6px;
     background: white;
     position: absolute;
-    right: -50%;
-    top: 17px;
+    right: -33.33%;
+    top: 21.5px;
     z-index: -1;
     /*put it behind the numbers*/
 }
@@ -183,17 +195,17 @@ input[type=number] {
 /*The number of the step and the connector before it = green*/
 
 #progressbar li.active:before {
-    background: #27AE60;
-    color: white;
+    border-color: #59d0ff;
+    color: #59d0ff;
+}
+
+#progressbar li.active * {
+    color: #59d0ff;
 }
 
 #progressbar li.active:after {
     color: white;
-    background: linear-gradient(270deg, #27AE60, #ffffff);
-    background-size: 400% 400%;
-    -webkit-animation: fill-proccess 1s forwards;
-    -moz-animation: fill-proccess 1s forwards;
-    animation: fill-proccess 1s forwards;
+    background-color: #59d0ff;
 }
 
 @-webkit-keyframes fill-proccess {

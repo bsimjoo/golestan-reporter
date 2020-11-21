@@ -13,31 +13,37 @@
     <form id="msform">
         <!-- progressbar -->
         <ul id="progressbar">
-            <li class="active">آدرس ایمیل</li>
-            <li>تایید هویت</li>
-            <li>پایان ثبت نام</li>
+            <li class="active"><span>آدرس ایمیل</span></li>
+            <li><span>تایید هویت</span></li>
+            <li><span>پایان ثبت نام</span></li>
         </ul>
         <!-- fieldsets -->
         <fieldset>
             <h2 class="fs-title">ایجاد یک حساب</h2>
-            <h3 class="fs-subtitle">یک حساب برای همه چیز</h3>
+            <h3 class="fs-subtitle">یک حساب برای همه خدمات</h3>
             <input type="number" name="uni_code" placeholder="شماره دانشجویی" />
             <input type="email" name="email" placeholder="آدرس ایمیل" />
             <input type="button" name="next" class="next action-button" value="بعدی" />
         </fieldset>
         <fieldset>
             <h2 class="fs-title">تایید ایمیل</h2>
-            <h3 class="fs-subtitle">کدی که برایتان ایمل شد را وارد کنید</h3>
-            <input type="text" name="ver_code" placeholder="کد" />
-            <input type="button" name="previous" class="previous action-button" value="قبلی" />
-            <input type="button" id="verify" name="verify" class="next action-button" value="تایید" />
+            <h3 class="fs-subtitle">کدی که برایتان ایمیل شد را وارد کنید</h3>
+            <h4 class="fs-subtitle">یا بر روی لینک ارسالی کلیک کنید</h3>
+                <input type="text" id="ver_code" name="ver_code" placeholder="کد" />
+                <input type="button" name="previous" class="previous action-button" value="قبلی" />
+                <input type="button" id="verify" name="verify" class="next action-button" value="تایید" />
         </fieldset>
         <fieldset>
             <h2 class="fs-title">پایان ثبت نام</h2>
-            <h3 class="fs-subtitle">حساب خود را ایمن کنید</h3>
+            <h3 class="fs-subtitle">تکیمل مشخصات بیشتر</h3>
+            <h4 class="fs-subtitle">این اطلاعات برای ارائه خدمات بیشتر استفاده خواهند شد</h4>
             <input type="password" name="password" placeholder="رمز عبور" />
             <input type="password" name="password-retype" placeholder="تکرار رمز عبور" />
-            <input type="button" name="previous" class="previous action-button" value="Previous" />
+            <input type="text" name="fa-firstname" placeholder="نام شما به فارسی" />
+            <input type="text" name="fa-lastname" placeholder="نام خانوادگی شما به فارسی" />
+            <input type="text" name="en-firstname" placeholder="نام شما به فارسی" />
+            <input type="text" name="en-lastname" placeholder="نام خانوادگی شما به فارسی" />
+            <input type="button" name="previous" class="previous action-button" value="قبلی" />
             <input type="submit" name="submit" class="submit action-button" value="ثبت" />
         </fieldset>
     </form>
