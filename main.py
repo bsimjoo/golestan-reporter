@@ -10,19 +10,21 @@ from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
 from User import User
 
-
+CONFIG_FILE_DIR = 'config.ini'
+CONFIG_FILE_ENCODER = 'utf8'
 class GolestanReporter:
     def __init__(self):
         self.cfg = configparser.ConfigParser()
         # TODO: use a dynamic cfg directory given in arg
-        self.cfg.read('cfg.ini')
-        self.defcfg = self.cfg['default']
+        with open(CONFIG_FILE_DIR, encoding=CONFIG_FILE_ENCODER) as cfgFile:
+            self.cfg.readfp(cfgFile)
+        self.defcfg = self.cfg['Default']
         self.internalDB = None
         self.usersDB = None
-        with lmdb.open(self.defcfg.get('db path','./'), max_dbs=2) as env:
-            self.usersDB = env.open_db(self.defcfg.get('users database','users').enconde())
+        with lmdb.open(self.defcfg.get('db_dir','.db'), max_dbs=2) as env:
+            self.usersDB = env.open_db(self.defcfg.get('users_database','users').enconde())
         self.last_news = None
-        last_news_file_dir = self.defcfg.get('last news file','last news.dat')
+        last_news_file_dir = self.defcfg.get('last_news_file','last news.dat')
         with open(last_news_file_dir, 'rb') as lnfile:
             self.last_news = pickle.load(lnfile)
         self.check_thread = None
@@ -46,7 +48,7 @@ class GolestanReporter:
             txn.put(key.enconde(), data)
 
     def get_last_news(self):
-        req = requests.get(self.defcfg["news source"])
+        req = requests.get(self.defcfg["news_source"])
         soup = BeautifulSoup(req.content, 'html.parser')
         news = soup.find('div', class_='newsitm')
         newsDict = {}
@@ -74,13 +76,13 @@ class GolestanReporter:
                 context = ssl.create_default_context()
                 # Try to log in to server and send email
                 try:
-                    server = smtplib.SMTP(self.defcfg['smtp server'], int(self.defcfg['smtp port']))
+                    server = smtplib.SMTP(self.defcfg['smtp_server'], int(self.defcfg['smtp_port']))
                     server.ehlo() # Can be omitted
                     server.starttls(context=context) # Secure the connection
                     server.ehlo() # Can be omitted
-                    server.login(self.defcfg['sender email'], self.defcfg['email password'])
+                    server.login(self.defcfg['sender_email'], self.defcfg['email_password'])
                     msg = MIMEMultipart('alternative')
-                    msg['From'] = self.defcfg['from']
+                    msg['From'] = self.defcfg.get('sender_name','Golestan reporter')
                     msg['Subject']=n['title']
                     msg.attach(MIMEText(n['body'],'html'))
                     with self.usersDB.begin() as txn:
@@ -89,7 +91,7 @@ class GolestanReporter:
                             if info.email !='' and not info.other_properties['golestan reporter mute']:
                                 print('sending mail to:', info.uni_code, info.email)
                                 msg['To'] = info.email
-                                server.sendmail(self.defcfg['sender email'], msg['To'], msg.as_string())
+                                server.sendmail(self.defcfg['sender_email'], msg['To'], msg.as_string())
                 except Exception as e:
                     # Print any error messages to stdout
                     print(e)

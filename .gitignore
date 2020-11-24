@@ -1,4 +1,4 @@
-mailconfig.py
-mail_list.txt
-last_news.md5
+config.ini
+last news.dat
 __pycache__/
+.vscode/
