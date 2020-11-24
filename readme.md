@@ -30,5 +30,5 @@ python3 main.py
 
 ***
 #### Related docs
-[TODO](./doc/TODO.md)
-[License](./doc/license.md)
+- [TODO](./doc/TODO.md)
+- [License](./doc/license.md)
