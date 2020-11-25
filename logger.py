@@ -51,7 +51,14 @@ class Logger:
             logfile.write(log)
 
     def log(self, level, message, tag=None):
-        self.__write_log(f'[{time.now().strftime("%Y%m%d%H%M")}][{level}][{tag}]: {message}')
+        # What is tag?
+        # tag is useful for programmers to trace errors and infos in code
+        # tags can be a location in codes like filenumber+line and it can help
+        # while debuging
+        if tag:
+            self.__write_log(f'[{time.now().strftime("%Y%m%d%H%M")}][{level}][{tag}]: {message}')
+        else:
+            self.__write_log(f'[{time.now().strftime("%Y%m%d%H%M")}][{level}]: {message}')
 
     def d(self, log, tag=None):
         'debug log level'
