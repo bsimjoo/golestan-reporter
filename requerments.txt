@@ -1,1 +1,7 @@
 beautifulSoup
+requests
+configparser
+lmdb
+pickle
+chevron
+cherrypy
