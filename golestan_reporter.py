@@ -23,21 +23,18 @@ class GolestanReporter(threading.Thread):
             self.last_news = pickle.load(lnfile)
         self.check_thread = None
 
-    def get_user_data(self, user, property=None):
+    def get_user_data(self, user=None) -> User:
         with self.usersDB.begin() as txn:
             data = txn.get(user.enconde())
-        user_info = pickle.load(data)
-        if property:
-            return user_info[property]
-        else:
-            return user_info
+        user_info = pickle.loads(data)
+        return user_info
 
     def set_user_data(self, user, value, key=None):
         if key:
             value_ = value
             value = self.get_user_data(user)
             value[key] = value_
-        data = pickle.dump(value)
+        data = pickle.dumps(value)
         with self.usersDB.begin(write=True) as txn:
             txn.put(key.enconde(), data)
 
@@ -84,7 +81,7 @@ class GolestanReporter(threading.Thread):
                     msg.attach(MIMEText(n['body'], 'html'))
                     with self.usersDB.begin() as txn:
                         for user, info in txn.cursor:
-                            info: User = pickle.load(info)
+                            info: User = pickle.loads(info)
                             if info.email != '' and not info.other_properties['golestan reporter mute']:
                                 print('sending mail to:',
                                       info.uni_code, info.email)
