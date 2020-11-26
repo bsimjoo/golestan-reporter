@@ -1,5 +1,6 @@
 import requests
 import configparser
+import cherrypy
 import re
 import lmdb
 import pickle
@@ -13,15 +14,15 @@ from User import User
 
 
 class GolestanReporter(threading.Thread):
-    def __init__(self, users_db: lmdb.Environment, config: configparser._section):
+    def __init__(self, users_db: lmdb.Environment, config: configparser.SectionProxy):
+        super.__init__()
         self.cfg = config
-        self.internalDB = None
         self.usersDB = users_db
         self.last_news = None
         last_news_file_dir = self.cfg.get('last_news_file', 'last news.dat')
         with open(last_news_file_dir, 'rb') as lnfile:
             self.last_news = pickle.load(lnfile)
-        self.check_thread = None
+        self.check_thread:threading.Timer = None
 
     def get_user_data(self, user=None) -> User:
         with self.usersDB.begin() as txn:
@@ -82,7 +83,7 @@ class GolestanReporter(threading.Thread):
                     with self.usersDB.begin() as txn:
                         for user, info in txn.cursor:
                             info: User = pickle.loads(info)
-                            if info.email != '' and not info.other_properties['golestan reporter mute']:
+                            if info.email != '' and not info.other_properties['golestan_reporter.mute']:
                                 print('sending mail to:',
                                       info.uni_code, info.email)
                                 msg['To'] = info.email
@@ -98,3 +99,16 @@ class GolestanReporter(threading.Thread):
 
     def run(self):
         self.check_and_mail(self.cfg.getint('check_interval', 100))
+
+    def stop(self):
+        try:
+            self.check_thread.join()
+            self.check_thread.cancel()
+        except:
+            pass
+
+
+class GolestanReporterWeb:
+    def __init__(self, users_db: lmdb.Environment, config: configparser.SectionProxy):
+        self.cfg = config
+        self.usersDB = users_db

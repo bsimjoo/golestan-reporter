@@ -8,5 +8,5 @@ class User:
         self.email = ''
         self.phone_number = ''
         self.other_properties = {
-            'golestan reporter mute':False
+            'golestan_reporter.mute':False
         }
