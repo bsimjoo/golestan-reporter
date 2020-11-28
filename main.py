@@ -7,6 +7,7 @@ from logger import Logger
 
 # main.py will run golestan_reporter and any other services
 from golestan_reporter import GolestanReporter
+import os
 
 T = 'main'
 CONFIG_FILE_DIR = 'config.ini'
@@ -17,7 +18,9 @@ DEV_PASS = 'eda57e1df3f6fb8a9ac094b95fc9cfb20d4783db8ecc8261f232f606fe35cbe3'   
 @cherrypy.tools.register('before_handler')
 def auth(class_):
     s = cherrypy.session
-    if s.get('user class') in class_:
+    if class_=='all' and s.get('user class') is not None:
+        return
+    elif s.get('user class') in class_:
         return
     else:
         raise cherrypy.HTTPRedirect('/signin')
@@ -76,12 +79,14 @@ class Root:
             if username == 'admin':
                 if self.get_hashsum(password)==self.cfg['admin_pass_sha256']:
                     cherrypy.session['user class']='admin'
+                    cherrypy.session['login']=True
                     raise cherrypy.HTTPRedirect('/admincp')
                 else:
                     return 'incorrect password'
             elif username == 'developer' and DEBUG:
                 if self.get_hashsum(password)==DEV_PASS:
                     cherrypy.session['user class']='dev'
+                    cherrypy.session['login']=True
                     raise cherrypy.HTTPRedirect('/devtool')
                     # TODO: add devtool
                 else:
@@ -91,7 +96,8 @@ class Root:
                 if user_info:
                     if self.get_hashsum(password) == user_info['passhash']:
                         cherrypy.session['user class'] = 'user'
-                        cherrypy.session['user'] = username
+                        cherrypy.session['username'] = username
+                        cherrypy.session['login']=True
                         raise cherrypy.HTTPRedirect('/cp')
                     else:
                         return 'incorrect password'
@@ -104,6 +110,8 @@ class Root:
         s = cherrypy.session
         if s.get('user class') == 'admin':
             raise cherrypy.HTTPRedirect('/admincp')
+        elif s.get('user class') == 'dev' and DEBUG:
+            raise cherrypy.HTTPRedirect('/devtool')
         elif s.get('user class') == 'user':
             raise cherrypy.HTTPRedirect('/cp')
         else:
@@ -135,8 +143,27 @@ maincfg=cfg['Main']
 logger = Logger(maincfg.get('log_dir','.log'), maincfg.getint('log_level',0), DEBUG)
 with lmdb.open(maincfg.get('db_dir','.db'), max_dbs=2) as env:
     usersDB = env.open_db(maincfg.get('users_database','users').encode())
-    golestan_reporter = GolestanReporter(users_db=usersDB, config=cfg['Golestan reporter'])
+    golestan_reporter = GolestanReporter(env=env, users_db=usersDB, config=cfg['Golestan reporter'], logger=logger)
+    
+    # web services:
+    root = Root(env, usersDB, maincfg, logger)
 
 golestan_reporter.start()
 
 # TODO: run web tools
+
+cherry_cfg = {
+    "global":
+        {
+            "server.socket_host": maincfg.get('host','0.0.0.0'),
+            "server.socket_port": maincfg.getint('port',8080),
+            "server.socket_file": maincfg.get('unix_socket'),
+            "tools.sessions.on": True,
+            "tools.staticdir.on": True,
+            "tools.staticdir.dir": os.path.abspath("./webInterface/files/"),
+            "tools.staticdir.root": "/",
+            "environment": None if DEBUG else "production"
+        }
+}
+
+cherrypy.quickstart(root, '/', cherry_cfg)

@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
 from logger import Logger
+from main import siged_in, auth
 
 T = 'GR'
 class GolestanReporter(threading.Thread):
@@ -85,3 +86,16 @@ class GolestanReporter(threading.Thread):
             self.check_thread.cancel()
         except:
             pass
+
+class GolestanReporterRoot:
+    def __init__(self, env:lmdb.Environment, users_db, config: configparser.SectionProxy, logger:Logger):
+        self.cfg = config
+        self.env = env
+        self.usersDB = users_db
+        self.l = logger
+        self.mountpoint = '/cp/services/golestan_reporter'
+
+    @cherrypy.tools.auth('all')
+    def index(self):
+        pass
+
