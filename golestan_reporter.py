@@ -39,41 +39,6 @@ class GolestanReporter(threading.Thread):
             self.l.e('error on getting user info',T)
             self.l.d(f'{type(e)}: {e}',T)
 
-    def set_user_data(self, user, value, key=None):
-        self.l.i(f'setting user({user}) info',T)
-        self.l.d(f'key:{key}'+', value:{value}'if key else ', value is full user info',T)
-        try:
-            if key:
-                value_ = value
-                value = self.get_user_data(user)
-                value[key] = value_
-            data = pickle.dumps(value)
-            with self.env.begin(self.usersDB,write=True) as txn:
-                txn.put(key.enconde(), data)
-        except Exception as e:
-            self.l.e('error on setting user info',T)
-            self.l.d(f'{type(e)}: {e}',T)
-
-    def get_last_news(self):
-        newsDict=None
-        try:
-            req = requests.get(self.cfg["news_source"])
-            soup = BeautifulSoup(req.content, 'html.parser')
-            news = soup.find('div', class_='newsitm')
-            newsDict = {}
-            news_title = news('span', 'newsitmtitle')[1].b.get_text()
-            newsDict['title'] = str(news_title)
-            news_dateText = str(news.find('span', 'newsitmpubdate').get_text())
-            pat = r'\d+/\d+/\d+'
-            date = re.findall(pat, news_dateText)[0]
-            newsDict['date'] = date
-            news_body = news.find('div', 'newsitmbody').div.p
-            newsDict['body'] = str(news_body)
-        except Exception as e:
-            self.l.e(f'{type(e)} error on getting news',T)
-            self.l.d(f'{e}',T)
-        return newsDict
-
     def check_and_mail(self, timer=0):
         n = self.get_last_news()
         if n is not None and n != self.last_news:
