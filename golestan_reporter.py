@@ -10,14 +10,14 @@ import threading
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
-from User import User
 from logger import Logger
 
 T = 'GR'
 class GolestanReporter(threading.Thread):
-    def __init__(self, users_db: lmdb.Environment, config: configparser.SectionProxy, logger:Logger):
+    def __init__(self, env:lmdb.Environment, users_db, config: configparser.SectionProxy, logger:Logger):
         super.__init__()
         self.cfg = config
+        self.env = env
         self.usersDB = users_db
         self.l = logger
         self.last_news = None
@@ -26,12 +26,14 @@ class GolestanReporter(threading.Thread):
             self.last_news = pickle.load(lnfile)
         self.check_thread:threading.Timer = None
 
-    def get_user_data(self, user=None) -> User:
+    def get_user_data(self, user, key = None):
         self.l.d(f'getting user({user}) info',T)
         try:
-            with self.usersDB.begin() as txn:
+            with self.env.begin(self.usersDB) as txn:
                 data = txn.get(user.enconde())
             user_info = pickle.loads(data)
+            if key:
+                return user_info[key]
             return user_info
         except Exception as e:
             self.l.e('error on getting user info',T)
@@ -46,7 +48,7 @@ class GolestanReporter(threading.Thread):
                 value = self.get_user_data(user)
                 value[key] = value_
             data = pickle.dumps(value)
-            with self.usersDB.begin(write=True) as txn:
+            with self.env.begin(self.usersDB,write=True) as txn:
                 txn.put(key.enconde(), data)
         except Exception as e:
             self.l.e('error on setting user info',T)
@@ -94,10 +96,10 @@ class GolestanReporter(threading.Thread):
                 msg.attach(MIMEText(n['body'], 'html'))
                 with self.usersDB.begin() as txn:
                     for user, info in txn.cursor:
-                        info: User = pickle.loads(info)
-                        if info.email != '' and not info.other_properties['golestan_reporter.mute']:
-                            self.l.d(f'sending mail to user({info.uni_code}): {info.email}', T)
-                            msg['To'] = info.email
+                        info = pickle.loads(info)
+                        if info.email != '' and not info['golestan_reporter.mute']:
+                            self.l.d(f"sending mail to user({info['uni_code']}): {info['email']}", T)
+                            msg['To'] = info['email']
                             server.sendmail(
                                 self.cfg['sender_email'], msg['To'], msg.as_string())
             except Exception as e:
@@ -118,9 +120,3 @@ class GolestanReporter(threading.Thread):
             self.check_thread.cancel()
         except:
             pass
-
-
-class GolestanReporterWeb:
-    def __init__(self, users_db: lmdb.Environment, config: configparser.SectionProxy):
-        self.cfg = config
-        self.usersDB = users_db
