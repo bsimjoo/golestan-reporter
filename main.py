@@ -148,22 +148,24 @@ with lmdb.open(maincfg.get('db_dir','.db'), max_dbs=2) as env:
     # web services:
     root = Root(env, usersDB, maincfg, logger)
 
-golestan_reporter.start()
+    golestan_reporter.start()
 
-# TODO: run web tools
+    # TODO: run web tools
 
-cherry_cfg = {
-    "global":
-        {
-            "server.socket_host": maincfg.get('host','0.0.0.0'),
-            "server.socket_port": maincfg.getint('port',8080),
-            "server.socket_file": maincfg.get('unix_socket'),
-            "tools.sessions.on": True,
-            "tools.staticdir.on": True,
-            "tools.staticdir.dir": os.path.abspath("./webInterface/files/"),
-            "tools.staticdir.root": "/",
-            "environment": None if DEBUG else "production"
-        }
-}
+    cherry_cfg = {
+        "global":
+            {
+                "server.socket_host": maincfg.get('host','0.0.0.0'),
+                "server.socket_port": maincfg.getint('port',8080),
+                "server.socket_file": maincfg.get('unix_socket'),
+                "tools.sessions.on": True,
+                "tools.staticdir.on": True,
+                "tools.staticdir.dir": os.path.abspath("./webInterface/files/"),
+                "tools.staticdir.root": "/",
+                "environment": None if DEBUG else "production"
+            }
+    }
 
-cherrypy.quickstart(root, '/', cherry_cfg)
+    cherrypy.quickstart(root, '/', cherry_cfg)
+
+    golestan_reporter.join()

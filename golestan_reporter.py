@@ -22,6 +22,7 @@ class GolestanReporter(threading.Thread):
         self.usersDB = users_db
         self.l = logger
         self.last_news = None
+        self.__locker=threading.Lock()
         last_news_file_dir = self.cfg.get('last_news_file', 'last news.dat')
         with open(last_news_file_dir, 'rb') as lnfile:
             self.last_news = pickle.load(lnfile)
@@ -78,6 +79,11 @@ class GolestanReporter(threading.Thread):
 
     def run(self):
         self.check_and_mail(self.cfg.getint('check_interval', 100))
+        self.__locker.acquire()
+
+    def join(self):
+        self.__locker.acquire()
+        self.__locker.release()
 
     def stop(self):
         self.l.i('thread is stoping...',T)
@@ -86,6 +92,8 @@ class GolestanReporter(threading.Thread):
             self.check_thread.cancel()
         except:
             pass
+        finally:
+            self.__locker.release()
 
 class GolestanReporterRoot:
     def __init__(self, env:lmdb.Environment, users_db, config: configparser.SectionProxy, logger:Logger):
