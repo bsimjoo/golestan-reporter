@@ -2,6 +2,7 @@ import configparser
 import lmdb
 import cherrypy
 import pickle
+import chevron
 from hashlib import sha256
 from logger import Logger
 
@@ -15,6 +16,27 @@ CONFIG_FILE_ENCODER = 'utf8'
 DEBUG = True
 DEV_PASS = 'eda57e1df3f6fb8a9ac094b95fc9cfb20d4783db8ecc8261f232f606fe35cbe3'       # hint: adamsmozi
 
+class TemplatesCache:
+    def __init__(self, templates_dir, cache):
+        self.cache = cache
+        get_path = lambda x: os.path.join(templates_dir, x)
+        self.__templates = {
+            'signin' : get_path('signin.html'),
+            'signup' : get_path('signup.html')
+        }
+        if cache:
+            for k, v in self.__templates:
+                with open(v) as f:
+                    self.__templates[k]=f.read()
+    
+    def get_template(self, template_key):
+        if self.cache:
+            return self.__templates[template_key]
+        else:
+            with open(self.__templates[template_key]) as template_file:
+                template = template_file.read()
+            return template
+
 @cherrypy.tools.register('before_handler')
 def auth(class_):
     s = cherrypy.session
@@ -26,12 +48,14 @@ def auth(class_):
         raise cherrypy.HTTPRedirect('/signin')
 
 class Root:
-    def __init__(self, env, users_db, config: configparser.SectionProxy, logger: Logger):
+    def __init__(self, env, users_db, config: configparser.SectionProxy, logger: Logger, templates):
+        self.templates = templates
         self.env = env
         self.usersDB = users_db
         self.cfg = config
         self.l = logger
         self.get_hashsum = lambda x: sha256(x.encode()).hexdigest()
+
 
     def get_user_data(self, user, key = None):
         self.l.d(f'getting user({user}) info',T)
@@ -73,7 +97,7 @@ class Root:
     def signin(self, username=None, password=None):
         if username is None or password is None:
             # signin form
-            pass
+            return self.templates.get_template('signin')
         else:
             # do signin:
             if username == 'admin':
@@ -141,12 +165,13 @@ with open(CONFIG_FILE_DIR, encoding=CONFIG_FILE_ENCODER) as cfgFile:
     cfg.readfp(cfgFile)
 maincfg=cfg['Main']
 logger = Logger(maincfg.get('log_dir','.log'), maincfg.getint('log_level',0), DEBUG)
+templates = TemplatesCache(maincfg.get('templates_dir'),not DEBUG)
 with lmdb.open(maincfg.get('db_dir','.db'), max_dbs=2) as env:
     usersDB = env.open_db(maincfg.get('users_database','users').encode())
-    golestan_reporter = GolestanReporter(env=env, users_db=usersDB, config=cfg['Golestan reporter'], logger=logger)
+    golestan_reporter = GolestanReporter(env=env, users_db=usersDB, config=cfg['Golestan reporter'], logger=logger, tempaltes=templates)
     
     # web services:
-    root = Root(env, usersDB, maincfg, logger)
+    root = Root(env, usersDB, maincfg, logger, templates)
 
     golestan_reporter.start()
 

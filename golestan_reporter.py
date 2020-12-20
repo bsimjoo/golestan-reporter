@@ -7,6 +7,7 @@ import pickle
 import smtplib
 import ssl
 import threading
+import chevron
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
@@ -15,8 +16,9 @@ from main import siged_in, auth
 
 T = 'GR'
 class GolestanReporter(threading.Thread):
-    def __init__(self, env:lmdb.Environment, users_db, config: configparser.SectionProxy, logger:Logger):
+    def __init__(self, env:lmdb.Environment, users_db, config: configparser.SectionProxy, logger:Logger, templates):
         super.__init__()
+        self.templates = templates
         self.cfg = config
         self.env = env
         self.usersDB = users_db
@@ -88,8 +90,8 @@ class GolestanReporter(threading.Thread):
     def stop(self):
         self.l.i('thread is stoping...',T)
         try:
-            self.check_thread.join()
             self.check_thread.cancel()
+            self.check_thread.join()
         except:
             pass
         finally:
@@ -105,5 +107,9 @@ class GolestanReporterRoot:
 
     @cherrypy.tools.auth('all')
     def index(self):
+        pass
+
+    def do(self, q):
+        """do an action"""
         pass
 
